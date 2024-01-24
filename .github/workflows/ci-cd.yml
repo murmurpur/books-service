@@ -15,7 +15,7 @@ jobs:
 
       - name: Build docker image
         run: |
-          docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/order-service:1.0
+          docker build . --file order-service\Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/order-service:1.0
           
       - name: Test solution
         run: |
