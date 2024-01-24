@@ -3,17 +3,11 @@ name: Microservices CI/CD
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'cast-service/**'
-      - 'movie-service/**'
   pull_request:
     branches: [ main ]
-    paths:
-      - 'cast-service/**'
-      - 'movie-service/**'
 
 jobs:
-  build-and-test:
+  build-and-push:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -23,11 +17,12 @@ jobs:
       postgres:
         image: postgres:12.1-alpine
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+          POSTGRES_DB: test_db
         ports:
           - 5432:5432
+        # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -43,27 +38,26 @@ jobs:
         python-version: 3.8
 
     - name: Install dependencies
-      run: |
-        pip install -r ${{ matrix.service }}/requirements.txt
+      run: pip install -r ${{ matrix.service }}/requirements.txt
 
-    - name: Test with pytest
+    - name: Run tests
+      env:
+        DATABASE_URI: postgresql://test_user:test_pass@localhost:5432/test_db
       run: |
-        echo "Run tests for ${{ matrix.service }}"
-        # Add commands to run tests, e.g., pytest
-
-    - name: Build Docker image
-      if: github.ref == 'refs/heads/main'
-      run: |
-        docker build -t your-registry/${{ matrix.service }}:${{ github.sha }} -f ${{ matrix.service }}/Dockerfile ${{ matrix.service }}
+        # Here, add your commands to run tests for each service
+        pytest ${{ matrix.service }}/tests/
 
     - name: Log in to Docker Hub
       if: github.ref == 'refs/heads/main'
       uses: docker/login-action@v1
       with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    - name: Push Docker image to Docker Hub
+    - name: Build and push Docker image
       if: github.ref == 'refs/heads/main'
       run: |
-        docker push your-registry/${{ matrix.service }}:${{ github.sha }}
+        docker build -t your-dockerhub-username/${{ matrix.service }}:${{ github.sha }} ${{ matrix.service }}
+        docker push your-dockerhub-username/${{ matrix.service }}:${{ github.sha }}
+
+    # Add additional deployment steps as needed
