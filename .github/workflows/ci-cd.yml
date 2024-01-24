@@ -3,12 +3,21 @@ name: CI/CD pipline
 on:
   push:
     branches: ["master"]
-  pull_request:
-    branches: ["master"]
-  workflow_dispatch:
+permissions: write-all
 
 jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/chechout@v3
 
+      - name: Prepeare unit tests
+        run:
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip install -r ./cast-service/requirments.txt
+          
   build-and-push-to-dh:
     name: Build and push to DockerHub
     runs-on: ubuntu-latest
