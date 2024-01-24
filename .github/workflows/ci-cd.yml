@@ -6,17 +6,6 @@ on:
 permissions: write-all
 
 jobs:
-  test:
-    name: Run tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Prepeare unit tests
-        run:
-          sudo apt update
-          sudo apt install -y python3-pip
-          pip install -r ./cast-service/requirements.txt
           
   build-and-push-to-dh:
     name: Build and push to DockerHub
