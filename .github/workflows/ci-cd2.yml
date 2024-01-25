@@ -46,9 +46,9 @@ jobs:
           echo "Log in to Docker Hub"
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
           echo "Build Docker image"
-          docker build -t ***/order-service:${{ github.sha }} ./order-service/
+          docker build -t murmurpur/order-service:${{ github.sha }} ./order-service/
           echo "Push Docker image to Docker Hub"
-          docker push ***/order-service:${{ github.sha }}
+          docker push murmurpur/order-service:${{ github.sha }}
 
 
   build-and-push-to-yc:
