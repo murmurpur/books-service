@@ -70,7 +70,7 @@ jobs:
 
       - name: Build and push to YC Registry
         run: |
-          docker build -t cr.yandex/${{ secrets.YC_REGISTRY_ID }}/order-service:${{ github.run_number }} ./books-service/order-service/
+          docker build -t cr.yandex/${{ secrets.YC_REGISTRY_ID }}/order-service:${{ github.run_number }} ./order-service/
           docker push cr.yandex/${{ secrets.YC_REGISTRY_ID }}/order-service:${{ github.run_number }}
 
   deploy:
