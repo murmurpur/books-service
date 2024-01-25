@@ -37,6 +37,10 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --no-cache-dir -r ./order-service/requirements.txt
+
+      - name: Install pytest (if not in requirements.txt)
+        run: |
+          pip install pytest
   
       - name: Run tests with pytest
         run: |
