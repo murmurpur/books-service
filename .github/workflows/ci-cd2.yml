@@ -26,10 +26,8 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v2
-
-      - name: List directory structure
-        run: ls -R
+      - name: Checkout repository
+        uses: actions/checkout@v2
   
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
@@ -38,11 +36,11 @@ jobs:
   
       - name: Install dependencies
         run: |
-          pip install --no-cache-dir -r ./books-service/order-service/requirements.txt
+          pip install --no-cache-dir -r ./order-service/requirements.txt
   
       - name: Test with pytest
         run: |
-          cd books-service/order-service
+          cd order-service
           pytest
   
       - name: Build and Push Docker image
