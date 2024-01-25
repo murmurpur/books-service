@@ -24,34 +24,29 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-
-    - name: Install dependencies
-      run: |
-        pip install -r order-service/requirements.txt
-
-    - name: Test with pytest
-      run: |
-        # Add your commands to run tests, e.g., pytest
-        echo "Run tests for the order service"
-
-    - name: Build and Push Docker image
-      if: github.ref == 'refs/heads/main'
-      run: |
-        echo "Build and push Docker image"
-        # Add your commands to build and push the Docker image
-        # e.g., docker build -t your-registry/your-image:${{ github.sha }} .
-        # docker push your-registry/your-image:${{ github.sha }}
-
-    - name: Deploy to Kubernetes
-      if: github.ref == 'refs/heads/main'
-      run: |
-        echo "Deploy to Kubernetes"
-        # Add your commands to deploy to Kubernetes
-        # e.g., kubectl apply -f deployment.yaml
+      - uses: actions/checkout@v2
+  
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+  
+      - name: Install dependencies
+        run: |
+          pip install -r order-service/requirements.txt
+  
+      - name: Test with pytest
+        run: |
+          # Add commands to run tests for the movie service, e.g., pytest
+          echo "Run tests for the order service"
+  
+      - name: Build and Push Docker image
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Log in to Docker Hub"
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          echo "Build Docker image"
+          docker build -t your-dockerhub-username/order-service:${{ github.sha }} order-service/
+          echo "Push Docker image to Docker Hub"
+          docker push your-dockerhub-username/order-service:${{ github.sha }}
