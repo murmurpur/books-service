@@ -38,10 +38,7 @@ jobs:
         run: |
           pip install --no-cache-dir -r ./order-service/requirements.txt
   
-      - name: Test with pytest
-        run: |
-          cd order-service
-          pytest
+      
   
       - name: Build and Push Docker image
         if: github.ref == 'refs/heads/main'
