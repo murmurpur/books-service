@@ -4,8 +4,9 @@ FROM python:3.8-slim
 # Set the working directory in the container to /app
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY ./order-service /app
+# Copy the order-service directory contents into the container at /app
+# Adjust the path as needed to point to the correct directory where your application code and requirements.txt are located
+COPY ./books-service/order-service /app
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
