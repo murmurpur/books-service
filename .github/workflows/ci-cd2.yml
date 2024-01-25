@@ -1,4 +1,4 @@
-name: Movie Service CI/CD
+name: Order Service CI/CD
 
 on:
   push:
@@ -14,9 +14,9 @@ jobs:
       postgres:
         image: postgres:12.1-alpine
         env:
-          POSTGRES_USER: movie_db_username
-          POSTGRES_PASSWORD: movie_db_password
-          POSTGRES_DB: movie_db_dev
+          POSTGRES_USER: order_db_username
+          POSTGRES_PASSWORD: order_db_password
+          POSTGRES_DB: order_db_dev
         ports:
           - 5432:5432
         options: >-
@@ -34,12 +34,12 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install -r movie-service/requirements.txt
+        pip install -r order-service/requirements.txt
 
     - name: Test with pytest
       run: |
         # Add your commands to run tests, e.g., pytest
-        echo "Run tests for the movie service"
+        echo "Run tests for the order service"
 
     - name: Build and Push Docker image
       if: github.ref == 'refs/heads/main'
