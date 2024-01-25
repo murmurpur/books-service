@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy the order-service directory contents into the container at /app
 # Adjust the path as needed to point to the correct directory where your application code and requirements.txt are located
-COPY ./books-service/order-service /app
+COPY ./books-service /order-service
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
