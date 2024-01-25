@@ -1,4 +1,4 @@
-name: Cast Service CI/CD
+name: Microservices CI/CD
 
 on:
   push:
@@ -7,73 +7,40 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  build-and-push:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:12.1-alpine
-        env:
-          POSTGRES_USER: cast_db_username
-          POSTGRES_PASSWORD: cast_db_password
-          POSTGRES_DB: cast_db_dev
-        ports:
-          - 5432:5432
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    strategy:
+      matrix:
+        service: [cast-service, movie-service]
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
 
     - name: Install dependencies
-      run: |
-        pip install -r cast-service/requirements.txt
+      run: pip install -r ${{ matrix.service }}/requirements.txt
 
-    - name: Test with pytest
+    - name: Run tests
       run: |
-        # Add your commands to run tests, e.g. pytest
-        echo "Run tests for the cast service"
+        # Here, add your commands to run tests for each service
+        echo "Run tests for ${{ matrix.service }}"
+        # Example: pytest ${{ matrix.service }}/tests/
 
-    - name: Build and Push Docker image
+    - name: Log in to Docker Hub
+      if: github.ref == 'refs/heads/main'
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Build and push Docker image
       if: github.ref == 'refs/heads/main'
       run: |
-        echo "Build and push Docker image"
-        # Add your commands to build and push the Docker image
-        # e.g., docker build -t your-registry/your-image:${{ github.sha }} .
-        # docker push your-registry/your-image:${{ github.sha }}
+        docker build -t your-dockerhub-username/${{ matrix.service }}:${{ github.sha }} ${{ matrix.service }}
+        docker push your-dockerhub-username/${{ matrix.service }}:${{ github.sha }}
 
-    - name: Deploy to Kubernetes
-      if: github.ref == 'refs/heads/main'
-      run: |
-        echo "Deploy to Kubernetes"
-        # Add your commands to deploy to Kubernetes
-        # e.g., kubectl apply -f deployment.yaml
-
-  build-and-push-to-yc:
-    name: Build and push to YandexCloud Registry
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Build docker image
-        run: |
-          docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/order-service:1.0      
-
-      - name: Login to YC Registry
-        uses: docker/login-action@v3.0.0
-        with:
-          registry: cr.yandex
-          username: json_key
-          password: ${{ secrets.YC_KEYS }}
-
-      - name: Push tag YC Registry
-        run: |
-          docker push cr.yandex/${{ secrets.YC_REGISTRY_ID }}/order-service:1.0
+    # Add additional deployment steps as needed
