@@ -27,6 +27,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: List directory structure
+        run: ls -R
   
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
@@ -35,7 +38,7 @@ jobs:
   
       - name: Install dependencies
         run: |
-          pip install --no-cache-dir -r books-service/order-service/requirements.txt
+          pip install --no-cache-dir -r ./books-service/order-service/requirements.txt
   
       - name: Test with pytest
         run: |
